@@ -1,59 +1,50 @@
 import tkinter as tk
-from tkinter import messagebox
-from sqrEq import sqrEquation
+from PIL import Image, ImageTk
+import string
+
+def shift_text(text, shift):
+    chars = string.ascii_uppercase + string.digits
+    shifted = ''.join(chars[(chars.index(c) + shift) % len(chars)] for c in text)
+    return shifted
+
+def generate_key():
+    input_block = entry.get().upper()
+    if len(input_block) != 5 or not all(c in string.ascii_uppercase + string.digits for c in input_block):
+        result_label.config(text="Введите корректный блок (5 символов A-Z, 0-9).")
+        return
+    
+    block2 = shift_text(input_block, 3)
+    block3 = shift_text(input_block, -5)
+    key = f"{input_block}-{block2}-{block3}"
+    result_label.config(text=key)
+
+# Создание интерфейса
+root = tk.Tk()
+root.title("Key Generator")
+root.geometry("500x300")
 
 
-def close():
-    window.destroy()
+def change_background(i=0):
+    background_image = Image.open(f"frames/frame_{i%8}.png")
+    background_image = background_image.resize((500, 300))
+    background_photo = ImageTk.PhotoImage(background_image)
+
+    background_label.config(image=background_photo)
+    background_label.image = background_photo
+
+    root.after(150, change_background, i+1)
 
 
-def calc():
-    A = float(arg_A.get())
-    B = float(arg_B.get())
-    C = float(arg_C.get())
-    if A == 0.0:
-        tk.messagebox.showwarning('Error', 'Division by zero!')
-    else:
-        lbl_result.configure(text=sqrEquation(A, B, C))
+background_label = tk.Label(root)
+background_label.place(relwidth=1, relheight=1)  # Заполняем весь экран
+change_background()  # Запуск смены фона
 
+tk.Label(root, text="Введите первый блок ключа (XXXXX):", bg='white').pack(pady=10)
+entry = tk.Entry(root, font=('Helvetica', 18), justify='center', width=10)
+entry.pack()
 
-window = tk.Tk()
-window.geometry('576x360')
-bg_img = tk.PhotoImage(file='bg_pic.png')
+tk.Button(root, text="Сгенерировать ключ", width=15, command=generate_key).pack(pady=20)
+result_label = tk.Label(root, text="", font=('Helvetica', 10), bg='white')
+result_label.pack(pady=10)
 
-lbl_bg = tk.Label(window, image=bg_img)
-lbl_bg.place(x=0, y=0, relwidth=1, relheight=1)
-
-frame = tk.Frame(window)
-frame.place(relx=0.5, rely=0.5, anchor='center')
-
-lbl_A = tk.Label(frame, text='A', font=('Arial', 30), bg='blue', fg='white')
-lbl_A.grid(column=0, row=0, padx=10, pady=15)
-arg_A = tk.Entry(frame, width=10)
-arg_A.insert(0, '1')
-arg_A.grid(column=0, row=1, padx=10, pady=15)
-
-lbl_B = tk.Label(frame, text='B', font=('Arial', 30))
-lbl_B.grid(column=1, row=0, padx=10, pady=15)
-arg_B = tk.Entry(frame, width=10)
-arg_B.insert(0, '0')
-arg_B.grid(column=1, row=1, padx=10, pady=15)
-
-lbl_C = tk.Label(frame, text='C', font=('Arial', 30))
-lbl_C.grid(column=2, row=0, padx=10, pady=15)
-arg_C = tk.Entry(frame, width=10)
-arg_C.insert(0, '0')
-arg_C.grid(column=2, row=1, padx=10, pady=15)
-
-lbl_roots = tk.Label(frame, text='Result:')
-lbl_roots.grid(column=1, row=2)
-lbl_result = tk.Label(frame, text='None yet.', font=('Arial', 10))
-lbl_result.grid(column=2, row=2)
-
-btn_calc = tk.Button(frame, text='Calculate', command=calc)
-btn_calc.grid(column=0, row=3, padx=10, pady=15)
-btn_exit = tk.Button(frame, text='Cancel', command=close)
-btn_exit.grid(column=2, row=3, padx=10, pady=15)
-
-
-window.mainloop()
+root.mainloop()
