@@ -18,7 +18,8 @@ def generate_key():
     key = f"{input_block}-{block2}-{block3}"
     result_label.config(text=key)
 
-# Создание интерфейса
+
+
 root = tk.Tk()
 root.title("Key Generator")
 root.geometry("500x300")
@@ -36,8 +37,8 @@ def change_background(i=0):
 
 
 background_label = tk.Label(root)
-background_label.place(relwidth=1, relheight=1)  # Заполняем весь экран
-change_background()  # Запуск смены фона
+background_label.place(relwidth=1, relheight=1)
+change_background()
 
 tk.Label(root, text="Введите первый блок ключа (XXXXX):", bg='white').pack(pady=10)
 entry = tk.Entry(root, font=('Helvetica', 18), justify='center', width=10)
